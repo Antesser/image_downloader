@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import Dict, List
 
 import aiofiles
 import cv2 as cv
@@ -49,7 +49,13 @@ async def files_uploader(
                     )
                     # saving an original img
                     await out_file.write(content)
-
+            else:
+                return JSONResponse(
+                    status_code=status.HTTP_200_OK,
+                    content={
+                        "files": f"{file.filename} have already been loaded"
+                    },
+                )
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -58,7 +64,7 @@ async def files_uploader(
     else:
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={"loaded pictures": file_names},
+            content={"loaded_pictures": file_names},
         )
 
 
@@ -92,7 +98,7 @@ async def file_downloader(file_name: str) -> FileResponse:
         )
 
 
-async def create_dict(path: str) -> dict[str, int]:
+async def create_dict(path: str) -> Dict[str, int]:
     return dict(
         map(
             lambda i: (i, os.listdir(path).count(i)),
