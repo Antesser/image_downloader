@@ -65,23 +65,24 @@ async def files_uploader(
 @router.get("/get_image")
 async def file_downloader(file_name: str) -> FileResponse:
     f_path = "".join([filtered_files_name, file_name])
-    filtered_files = os.listdir(filtered_path)
     o_path = "".join([original_path, file_name])
+    filtered_files = await create_dict(filtered_path)
+    original_files = await create_dict(original_path)
     for file in filtered_files:
-        if f_path.split(sep="/")[-1] not in file.split(".")[:-1][
-            0
-        ] and os.path.isfile(o_path + "." + file.split(".")[-1]):
+        if f_path.split(sep="/")[-1] in file.split(".")[
+            :-1
+        ] and os.path.isfile(filtered_path + "".join(file)):
+            return FileResponse(filtered_path + "".join(file))
+    for file in original_files:
+        if o_path.split(sep="/")[-1] in file.split(".")[
+            :-1
+        ] and os.path.isfile(original_path + "".join(file)):
             return JSONResponse(
                 status_code=200,
                 content={
                     "message": f"pls wait, filtered picture {file_name} is being processed"
                 },
             )
-        if f_path.split(sep="/")[-1] == file.split(".")[:-1][
-            0
-        ] and os.path.isfile(filtered_path + file):
-            return FileResponse(filtered_path + file)
-
     else:
         return JSONResponse(
             status_code=404,
@@ -89,6 +90,15 @@ async def file_downloader(file_name: str) -> FileResponse:
                 "message": f"picture {file_name} hasn`t been previously loaded, check provided name"
             },
         )
+
+
+async def create_dict(path: str) -> dict[str, int]:
+    return dict(
+        map(
+            lambda i: (i, os.listdir(path).count(i)),
+            os.listdir(path),
+        )
+    )
 
 
 async def add_filters(
