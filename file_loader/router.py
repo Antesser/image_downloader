@@ -27,20 +27,6 @@ def download_files(request: Request):
     return templates.TemplateResponse("download.html", {"request": request})
 
 
-async def canny(
-    file: UploadFile,
-    content: str,
-    first_threshold: int = 0,
-    second_threshold: int = 0,
-) -> None:
-    save_path = "".join([filtered_files_name, file.filename])
-    nparr = np.fromstring(content, np.uint8)
-    img = cv.imdecode(nparr, cv.IMREAD_COLOR)
-    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    img = cv.Canny(img, first_threshold, second_threshold)
-    cv.imwrite(save_path, img)
-
-
 @router.post("/upload_multiple_files/")
 async def files_uploader(
     files: List[UploadFile] = File(...),
@@ -55,7 +41,7 @@ async def files_uploader(
                 file_names.append(file.filename)
                 async with aiofiles.open(path, "wb") as out_file:
                     content = await file.read()
-                    await canny(
+                    await add_filters(
                         file,
                         content,
                         first_threshold,
@@ -103,3 +89,17 @@ async def file_downloader(file_name: str) -> FileResponse:
                 "message": f"picture {file_name} hasn`t been previously loaded, check provided name"
             },
         )
+
+
+async def add_filters(
+    file: UploadFile,
+    content: str,
+    first_threshold: int = 0,
+    second_threshold: int = 0,
+) -> None:
+    save_path = "".join([filtered_files_name, file.filename])
+    nparr = np.fromstring(content, np.uint8)
+    img = cv.imdecode(nparr, cv.IMREAD_COLOR)
+    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    img = cv.Canny(img, first_threshold, second_threshold)
+    cv.imwrite(save_path, img)
