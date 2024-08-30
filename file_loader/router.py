@@ -4,15 +4,27 @@ from typing import List
 import aiofiles
 import cv2 as cv
 import numpy as np
-from fastapi import APIRouter, File, UploadFile, status
+from fastapi import APIRouter, File, Request, UploadFile, status
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
 
 router = APIRouter(prefix="/file_ops", tags=["File operations"])
 
+templates = Jinja2Templates(directory="templates")
 
 filtered_files_name = "media/with_filters/filtered_"
 filtered_path = "media/with_filters/"
 original_path = "media/"
+
+
+@router.get("/upload")
+def upload_files(request: Request):
+    return templates.TemplateResponse("upload.html", {"request": request})
+
+
+@router.get("/download")
+def download_files(request: Request):
+    return templates.TemplateResponse("download.html", {"request": request})
 
 
 async def canny(

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Upload Images</title>
+</head>
+
+<body>
+  <h1>Upload Images</h1>
+  <form action="/file_ops/upload_multiple_files/" method="post" enctype="multipart/form-data">
+    <input type="file" name="files" multiple>
+    <br>
+    <label for="first_threshold">First Threshold:</label>
+    <input type="number" name="first_threshold" value="0">
+    <br>
+    <label for="second_threshold">Second Threshold:</label>
+    <input type="number" name="second_threshold" value="0">
+    <br>
+    <input type="submit" value="Upload">
+  </form>
+</body>
+
+</html>
