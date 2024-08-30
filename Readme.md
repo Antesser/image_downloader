@@ -1,4 +1,4 @@
-                                              **Image Filtering API**
+**Image Filtering API**
 
 This is a test FastAPI application that allows you to upload multiple images, apply a Canny edge detection filter and BGR2GRAY color to them, and then get the filtered images.
 
