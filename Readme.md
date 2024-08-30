@@ -2,11 +2,11 @@
 
 This is a test FastAPI application that allows you to upload multiple images, apply a Canny edge detection filter and BGR2GRAY color to them, and then get the filtered images.
 
-Installation is completed via docker with following command:
+Installation is completed via docker with following command in order to build an image:
 ```zsh
 docker build . -t file_loader:0.0.1
 ```
-To start the application, run the following command, port is your preferense:
+To start the application, run next command in a new container, pulling the image if needed and starting the container, port is your preferense:
 ```zsh
 docker run -dp 7329:8000 file_loader:0.0.1
 ```
