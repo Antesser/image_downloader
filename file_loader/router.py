@@ -3,9 +3,9 @@ from typing import List
 
 import aiofiles
 import cv2 as cv
+import numpy as np
 from fastapi import APIRouter, File, UploadFile, status
 from fastapi.responses import FileResponse, JSONResponse
-import numpy as np
 
 router = APIRouter(prefix="/file_ops", tags=["File operations"])
 
@@ -16,27 +16,29 @@ original_path = "media/"
 
 
 async def canny(
-    file: UploadFile, content: str, threshold1: int = 0, threshold2: int = 0
+    file: UploadFile,
+    content: str,
+    first_threshold: int = 0,
+    second_threshold: int = 0,
 ) -> None:
     save_path = "".join([filtered_files_name, file.filename])
     nparr = np.fromstring(content, np.uint8)
     img = cv.imdecode(nparr, cv.IMREAD_COLOR)
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    img = cv.Canny(img, threshold1, threshold2)
+    img = cv.Canny(img, first_threshold, second_threshold)
     cv.imwrite(save_path, img)
 
 
 @router.post("/upload_multiple_files/")
 async def files_uploader(
     files: List[UploadFile] = File(...),
-    threshold1: int = 0,
-    threshold2: int = 0,
+    first_threshold: int = 0,
+    second_threshold: int = 0,
 ) -> JSONResponse:
     file_names = []
     try:
         for file in files:
             path = "".join([original_path, file.filename])
-            print(path)
             if not os.path.isfile(path):
                 file_names.append(file.filename)
                 async with aiofiles.open(path, "wb") as out_file:
@@ -44,8 +46,8 @@ async def files_uploader(
                     await canny(
                         file,
                         content,
-                        threshold1,
-                        threshold2,
+                        first_threshold,
+                        second_threshold,
                     )
                     # saving an original img
                     await out_file.write(content)
