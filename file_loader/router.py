@@ -46,6 +46,7 @@ async def files_uploader(
                         threshold1,
                         threshold2,
                     )
+                    # saving an original img
                     await out_file.write(content)
 
     except Exception as e:
@@ -56,13 +57,16 @@ async def files_uploader(
     else:
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={"result": {"loaded pictures": file_names}},
+            content={"loaded pictures": file_names},
         )
 
 
 @router.get("/get_image")
 async def file_downloader(file_name: str) -> FileResponse:
     f_path = "".join([filtered_path, file_name])
+    files = os.listdir("media/with_filters")
+    print("list", files)
+    print("b",f_path)
     o_path = "".join([original_path, file_name])
     if os.path.isfile(f_path):
         return FileResponse(f_path)
