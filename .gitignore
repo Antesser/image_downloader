@@ -1,6 +1,6 @@
-/media/*
-!media/.gitkeep
-/media/with_filters*
-!media/with_filters.gitkeep  
+/media/
+
+/media/with_filters
+
 .venv
 __pycache__

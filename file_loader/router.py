@@ -10,14 +10,15 @@ import numpy as np
 router = APIRouter(prefix="/file_ops", tags=["File operations"])
 
 
-filtered_path = "media/with_filters/filtered_"
+filtered_files_name = "media/with_filters/filtered_"
+filtered_path = "media/with_filters/"
 original_path = "media/"
 
 
 async def canny(
     file: UploadFile, content: str, threshold1: int = 0, threshold2: int = 0
 ) -> None:
-    save_path = "".join([filtered_path, file.filename])
+    save_path = "".join([filtered_files_name, file.filename])
     nparr = np.fromstring(content, np.uint8)
     img = cv.imdecode(nparr, cv.IMREAD_COLOR)
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -63,20 +64,24 @@ async def files_uploader(
 
 @router.get("/get_image")
 async def file_downloader(file_name: str) -> FileResponse:
-    f_path = "".join([filtered_path, file_name])
-    files = os.listdir("media/with_filters")
-    print("list", files)
-    print("b",f_path)
+    f_path = "".join([filtered_files_name, file_name])
+    filtered_files = os.listdir(filtered_path)
     o_path = "".join([original_path, file_name])
-    if os.path.isfile(f_path):
-        return FileResponse(f_path)
-    elif os.path.isfile(o_path) and not os.path.isfile(f_path):
-        return JSONResponse(
-            status_code=200,
-            content={
-                "message": f"pls wait, filtered picture {file_name} is being processed"
-            },
-        )
+    for file in filtered_files:
+        if f_path.split(sep="/")[-1] not in file.split(".")[:-1][
+            0
+        ] and os.path.isfile(o_path + "." + file.split(".")[-1]):
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "message": f"pls wait, filtered picture {file_name} is being processed"
+                },
+            )
+        if f_path.split(sep="/")[-1] == file.split(".")[:-1][
+            0
+        ] and os.path.isfile(filtered_path + file):
+            return FileResponse(filtered_path + file)
+
     else:
         return JSONResponse(
             status_code=404,
