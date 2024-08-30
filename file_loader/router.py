@@ -70,15 +70,22 @@ async def files_uploader(
 
 @router.get("/get_image")
 async def file_downloader(file_name: str) -> FileResponse:
+    """the main difficulty with this endpoint was implementation of
+    file name usage in order to download required file without
+    bothering about it's extensions
+    """
     f_path = "".join([filtered_files_name, file_name])
     o_path = "".join([original_path, file_name])
     filtered_files = await create_dict(filtered_path)
     original_files = await create_dict(original_path)
+
+    # we basically compare original files and filtered ones, if we have both - bingo
     for file in filtered_files:
         if f_path.split(sep="/")[-1] in file.split(".")[
             :-1
         ] and os.path.isfile(filtered_path + "".join(file)):
             return FileResponse(filtered_path + "".join(file))
+    # if we have only one - meaning smt went wrong with filtering/it takes some time to finish
     for file in original_files:
         if o_path.split(sep="/")[-1] in file.split(".")[
             :-1
