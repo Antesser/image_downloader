@@ -12,7 +12,7 @@ docker run -dp 7329:8000 file_loader:0.0.1
 ```
 This will start the FastAPI server on http://localhost:7329.
 
-To upload images, open Swagger on http://localhost:7329/docs and use /file_ops/upload_multiple_files/ handler or you can use **really** simplistic JINJA2 templates via http://localhost:7329/file_ops/upload. You can include multiple images in the request, you can also specify the first_threshold and second_threshold parameters as integers to customize the Canny edge detection filter, while BGR2GRAY color will apply automatically *as it looks great*. In return you'll receive JSONResponse with errors/additional information about request.
+To upload images, open Swagger on http://localhost:7329/docs and use /file_ops/upload_multiple_files/ handler or you can use **really** simplistic Jinja2 templates via http://localhost:7329/file_ops/upload. You can include multiple images in the request, you can also specify the first_threshold and second_threshold parameters as integers to customize the Canny edge detection filter, while BGR2GRAY color will apply automatically *as it looks great*. In return you'll receive JSONResponse with errors/additional information about request.
 
 To get a filtered image open handler file_ops/get_image/ or http://localhost:7329/file_ops/download with the file_name parameter set to the name of the image as string you want to get **without** file type, for example:
 
