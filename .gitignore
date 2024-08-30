@@ -1,0 +1,4 @@
+/media/*
+!media/.gitkeep 
+.venv
+__pycache__
