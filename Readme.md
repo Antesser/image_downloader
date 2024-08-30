@@ -18,4 +18,4 @@ To get a filtered image open handler file_ops/get_image/ with the file_name para
 
 > uploading image was *Пикачу.jpeg*, in order to get the image you should paste just *Пикачу*
 
-If the filtered image is not yet available, the server will return a JSONResponse indicating that the filtered image is being processed. You can then wait a few moments and try again. If required image wasn't even loaded you'll receive a JSONResponse with information about it as well.
+If the filtered image is not yet available, the server will return a JSONResponse indicating that the filtered image is being processed. You can then wait a few moments and try again. If required image wasn't even loaded you'll receive a JSONResponse with information about it as well. If everything is ok you'll get FileResponse with requested image.
