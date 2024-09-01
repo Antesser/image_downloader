@@ -4,9 +4,11 @@ from typing import Dict, List
 import aiofiles
 import cv2 as cv
 import numpy as np
-from fastapi import APIRouter, File, Request, UploadFile, status
+from fastapi import APIRouter, Depends, File, Request, UploadFile, status
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+
+from file_loader.schemas import DownloadForm, UploadForm
 
 router = APIRouter(prefix="/file_ops", tags=["File operations"])
 
@@ -29,9 +31,8 @@ def download_files(request: Request):
 
 @router.post("/upload_multiple_files/")
 async def files_uploader(
+    threashholds: UploadForm = Depends(),
     files: List[UploadFile] = File(...),
-    first_threshold: int = 0,
-    second_threshold: int = 0,
 ) -> JSONResponse:
     file_names = []
     try:
@@ -44,8 +45,8 @@ async def files_uploader(
                     await add_filters(
                         file,
                         content,
-                        first_threshold,
-                        second_threshold,
+                        threashholds.first_threshold,
+                        threashholds.second_threshold,
                     )
                     # saving an original img
                     await out_file.write(content)
@@ -69,13 +70,13 @@ async def files_uploader(
 
 
 @router.get("/get_image")
-async def file_downloader(file_name: str) -> FileResponse:
+async def file_downloader(data: DownloadForm = Depends()) -> FileResponse:
     """the main difficulty with this endpoint was implementation of
     file name usage in order to download required file without
-    bothering about it's extensions
+    bothering about its` extensions
     """
-    f_path = "".join([filtered_files_name, file_name])
-    o_path = "".join([original_path, file_name])
+    f_path = "".join([filtered_files_name, data.file_name])
+    o_path = "".join([original_path, data.file_name])
     filtered_files = await create_dict(filtered_path)
     original_files = await create_dict(original_path)
 
@@ -93,14 +94,14 @@ async def file_downloader(file_name: str) -> FileResponse:
             return JSONResponse(
                 status_code=200,
                 content={
-                    "message": f"pls wait, filtered picture {file_name} is being processed"
+                    "message": f"pls wait, filtered picture {data.file_name} is being processed"
                 },
             )
     else:
         return JSONResponse(
             status_code=404,
             content={
-                "message": f"picture {file_name} hasn`t been previously loaded, check provided name"
+                "message": f"picture {data.file_name} hasn`t been previously loaded, check provided name"
             },
         )
 
