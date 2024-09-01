@@ -7,6 +7,7 @@ import numpy as np
 from fastapi import APIRouter, Depends, File, Request, UploadFile, status
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from starlette.templating import _TemplateResponse
 
 from file_loader.schemas import DownloadForm, UploadForm
 
@@ -20,12 +21,12 @@ original_path = "media/"
 
 
 @router.get("/upload")
-def upload_files(request: Request):
+def upload_files(request: Request) -> _TemplateResponse:
     return templates.TemplateResponse("upload.html", {"request": request})
 
 
 @router.get("/download")
-def download_files(request: Request):
+def download_files(request: Request) -> _TemplateResponse:
     return templates.TemplateResponse("download.html", {"request": request})
 
 
